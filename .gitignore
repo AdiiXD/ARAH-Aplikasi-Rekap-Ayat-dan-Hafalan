@@ -1,0 +1,42 @@
+# Environment file
+.env
+.env.*
+!.env.example
+
+# Dependencies
+/vendor/
+/node_modules/
+/composer.lock
+
+# Logs
+/logs/*.log
+/logs/cron.log
+/logs/app.log
+
+# Cache and temp files
+/cache/
+/tmp/
+*.tmp
+*.cache
+
+# IDE and OS files
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Uploaded files (if any)
+/uploads/
+/storage/
+
+# Composer
+composer.phar
+
+# PHPUnit
+.phpunit.result.cache
+
+# Project specific
+/public/.htaccess
+/.htaccess
