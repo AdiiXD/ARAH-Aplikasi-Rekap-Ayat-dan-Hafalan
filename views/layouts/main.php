@@ -248,6 +248,11 @@ $name = $_SESSION['name'] ?? 'Pengguna';
                                         <i class="bi bi-building"></i> Kelola Kelas
                                     </a>
                                 </li>
+                                <li class="nav-item">
+                                    <a href="index.php?action=profile" class="nav-link <?= ($activeMenu ?? '') == 'profile' ? 'active' : '' ?>">
+                                        <i class="bi bi-gear"></i> Pengaturan
+                                    </a>
+                                </li>
                             <?php elseif ($role === 'ustadz'): ?>
                                 <li class="nav-item">
                                     <a href="index.php?action=ustadz/dashboard" class="nav-link <?= ($activeMenu ?? '') == 'dashboard' ? 'active' : '' ?>">
@@ -271,6 +276,11 @@ $name = $_SESSION['name'] ?? 'Pengguna';
                                 </li>
                                 <li class="nav-item"><a href="index.php?action=bookmark" class="nav-link"><i class="bi bi-bookmark"></i> Bookmark</a></li>
                                 <li class="nav-item"><a href="index.php?action=statistics/weekly" class="nav-link"><i class="bi bi-graph-up"></i> Statistik Hafalan</a></li>
+                                <li class="nav-item">
+                                    <a href="index.php?action=profile" class="nav-link <?= ($activeMenu ?? '') == 'profile' ? 'active' : '' ?>">
+                                        <i class="bi bi-gear"></i> Pengaturan
+                                    </a>
+                                </li>
                             <?php elseif ($role === 'orangtua'): ?>
                                 <li class="nav-item">
                                     <a href="index.php?action=orangtua/dashboard" class="nav-link <?= ($activeMenu ?? '') == 'dashboard' ? 'active' : '' ?>">
@@ -299,6 +309,11 @@ $name = $_SESSION['name'] ?? 'Pengguna';
                                 </li>
                                 <li class="nav-item"><a href="index.php?action=bookmark" class="nav-link"><i class="bi bi-bookmark"></i> Bookmark</a></li>
                                 <li class="nav-item"><a href="index.php?action=statistics/weekly" class="nav-link"><i class="bi bi-graph-up"></i> Statistik Hafalan</a></li>
+                                <li class="nav-item">
+                                    <a href="index.php?action=profile" class="nav-link <?= ($activeMenu ?? '') == 'profile' ? 'active' : '' ?>">
+                                        <i class="bi bi-gear"></i> Pengaturan
+                                    </a>
+                                </li>
                             <?php endif; ?>
                             <li class="nav-item">
                                 <a href="index.php?action=reports" class="nav-link">
