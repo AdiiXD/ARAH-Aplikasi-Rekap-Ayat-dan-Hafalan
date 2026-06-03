@@ -30,7 +30,7 @@ class AdminSettingController
         $title = "Pengaturan Sistem";
         $activeMenu = "settings";
         ob_start();
-        include __DIR__ . '/../../views/admin/settings/index.php';
+        include __DIR__ . '/../../views/admin/setting/index.php';
         $content = ob_get_clean();
         include __DIR__ . '/../../views/layouts/main.php';
     }
