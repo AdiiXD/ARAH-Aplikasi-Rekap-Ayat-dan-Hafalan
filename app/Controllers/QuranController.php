@@ -3,9 +3,11 @@
 namespace App\Controllers;
 
 use App\Helpers\QuranHelper;
+use App\Models\Setting;
+use App\Models\Bookmark;
+use App\Models\QuranListeningLog;
 use App\Middleware\AuthMiddleware;
 use App\Middleware\RoleMiddleware;
-use App\Models\QuranListeningLog;
 
 class QuranController
 {
@@ -18,32 +20,42 @@ class QuranController
         $this->quranHelper = new QuranHelper();
     }
 
+    /**
+     * Halaman daftar surat dengan filter pencarian (nama surah, nomor, tempat turun)
+     */
     public function index()
     {
         try {
-            // Ambil parameter filter dari GET
             $search = trim($_GET['search'] ?? '');
             $revelation = $_GET['revelation'] ?? '';
+            $goto = $_GET['goto'] ?? '';
+
+            // Jika ada navigasi langsung surah:ayat
+            if (preg_match('/^(\d+):(\d+)$/', $goto, $matches)) {
+                $surahId = (int)$matches[1];
+                $ayat = (int)$matches[2];
+                header("Location: index.php?action=quran/show&id={$surahId}#ayat-{$ayat}");
+                exit;
+            }
 
             $chapters = $this->quranHelper->getChapters();
 
-            // Filter berdasarkan tempat turun
+            // Filter tempat turun
             if ($revelation === 'makkah' || $revelation === 'madinah') {
-                $chapters = array_filter($chapters, function ($chapter) use ($revelation) {
+                $chapters = array_filter($chapters, function($chapter) use ($revelation) {
                     return ($chapter['revelation_place'] ?? '') === $revelation;
                 });
             }
 
-            // Filter berdasarkan pencarian (nama surat atau nomor surat)
+            // Pencarian nama atau nomor surat
             if (!empty($search)) {
                 if (is_numeric($search)) {
-                    // Cari berdasarkan nomor surat
-                    $chapters = array_filter($chapters, function ($chapter) use ($search) {
+                    $chapters = array_filter($chapters, function($chapter) use ($search) {
                         return $chapter['id'] == $search;
                     });
                 } else {
                     $searchLower = strtolower($search);
-                    $chapters = array_filter($chapters, function ($chapter) use ($searchLower) {
+                    $chapters = array_filter($chapters, function($chapter) use ($searchLower) {
                         return (strpos(strtolower($chapter['name_simple'] ?? ''), $searchLower) !== false)
                             || (strpos(strtolower($chapter['name_arabic'] ?? ''), $searchLower) !== false)
                             || (strpos(strtolower($chapter['name_transliteration'] ?? ''), $searchLower) !== false);
@@ -53,8 +65,6 @@ class QuranController
 
             $title = "Daftar Surat Al-Quran";
             $activeMenu = "quran";
-            $searchQuery = $search;
-            $revelationFilter = $revelation;
             ob_start();
             include __DIR__ . '/../../views/quran/index.php';
             $content = ob_get_clean();
@@ -64,34 +74,46 @@ class QuranController
             $this->showError($error);
         }
     }
+
+    /**
+     * Halaman baca surat dengan audio, tajwid, terjemahan, dan preferensi user
+     */
     public function show(int $chapterId)
     {
         try {
-            // Proses pergantian qori' jika ada POST
+            $userId = $_SESSION['user_id'];
+
+            // Proses ganti qari (jika POST dari floating panel)
             if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['reciter'])) {
-                $this->quranHelper->setSelectedReciter($_POST['reciter']);
-                header("Location: index.php?action=quran/show&id=$chapterId");
+                Setting::set('default_qari', $_POST['reciter'], $userId, 'text');
+                header("Location: index.php?action=quran/show&id={$chapterId}");
                 exit;
             }
 
-            // Proses toggle tajwid
+            // Proses toggle tajwid (jika POST)
             if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['toggle_tajwid'])) {
-                $_SESSION['show_tajwid'] = !($_SESSION['show_tajwid'] ?? false);
+                $current = Setting::get('default_tajwid', false, $userId);
+                Setting::set('default_tajwid', !$current, $userId, 'boolean');
                 header("Location: " . $_SERVER['REQUEST_URI']);
                 exit;
             }
 
+            // Ambil preferensi user
+            $selectedReciter = Setting::get('default_qari', 'ar.alafasy', $userId);
+            $showTajwid = (bool) Setting::get('default_tajwid', false, $userId);
+            $showTranslation = (bool) Setting::get('default_translation', true, $userId);
+            // Untuk sementara, translation toggle masih via session? Bisa juga pakai setting.
+            // Tapi di view ada tombol toggle translation sendiri (via session). Kita biarkan session dulu.
+
+            // Data surat
             $chapterInfo = $this->quranHelper->getChapterInfo($chapterId);
             if (!$chapterInfo) {
                 throw new \Exception("Surat tidak ditemukan.");
             }
 
-            // Ambil data ayat dengan tajwid
+            // Ambil ayat dengan tajwid
             $verses = $this->quranHelper->getVersesWithTajweed($chapterId);
             $reciters = $this->quranHelper->getAvailableReciters();
-            $selectedReciter = $this->quranHelper->getSelectedReciter();
-            $chapters = $this->quranHelper->getChapters(); // tambahkan ini
-            $showTajwid = $_SESSION['show_tajwid'] ?? false;
 
             $title = "Surat " . ($chapterInfo['name_simple'] ?? 'Al-Quran');
             $activeMenu = "quran";
@@ -105,6 +127,9 @@ class QuranController
         }
     }
 
+    /**
+     * Endpoint untuk mengambil tafsir via AJAX
+     */
     public function tafsir(int $surah, int $ayat): void
     {
         header('Content-Type: application/json');
@@ -117,40 +142,11 @@ class QuranController
         exit;
     }
 
-    private function showError(string $error)
+    /**
+     * Endpoint untuk mencatat pemutaran audio (statistik bacaan harian)
+     */
+    public function logPlay(): void
     {
-        $title = "Error";
-        ob_start();
-        include __DIR__ . '/../../views/quran/error.php';
-        $content = ob_get_clean();
-        include __DIR__ . '/../../views/layouts/main.php';
-    }
-
-    public function search()
-    {
-        $query = $_GET['q'] ?? '';
-        $results = [];
-        if (strlen($query) >= 3) {
-            // Gunakan API quran.com search
-            $url = "https://api.quran.com/api/v4/search?q=" . urlencode($query) . "&page=1&per_page=20";
-            try {
-                $response = $this->quranHelper->makeRequest($url);
-                $results = $response['verses'] ?? [];
-            } catch (\Exception $e) {
-                error_log("Search error: " . $e->getMessage());
-            }
-        }
-        $title = "Pencarian Ayat";
-        $activeMenu = "quran_search";
-        ob_start();
-        include __DIR__ . '/../../views/quran/search.php';
-        $content = ob_get_clean();
-        include __DIR__ . '/../../views/layouts/main.php';
-    }
-
-    public function logPlay()
-    {
-        // Hanya menerima POST
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             http_response_code(405);
             echo json_encode(['status' => 'error', 'message' => 'Method not allowed']);
@@ -180,5 +176,17 @@ class QuranController
 
         echo json_encode(['status' => 'success', 'message' => 'Logged']);
         exit;
+    }
+
+    /**
+     * Halaman error
+     */
+    private function showError(string $error)
+    {
+        $title = "Error";
+        ob_start();
+        include __DIR__ . '/../../views/quran/error.php';
+        $content = ob_get_clean();
+        include __DIR__ . '/../../views/layouts/main.php';
     }
 }
