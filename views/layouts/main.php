@@ -39,12 +39,12 @@ $name = $_SESSION['name'] ?? 'Pengguna';
             font-weight: 600;
             letter-spacing: -0.3px;
         }
-        /* Offcanvas sidebar styling dengan animasi */
+        /* Offcanvas tanpa animasi */
         .offcanvas {
             background: var(--cream-card);
             border-right: 1px solid var(--border-light);
             box-shadow: 4px 0 12px rgba(0,0,0,0.05);
-            transition: transform 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+            transition: none; /* Hapus animasi */
         }
         .offcanvas-header {
             border-bottom: 1px solid var(--border-light);
@@ -58,28 +58,23 @@ $name = $_SESSION['name'] ?? 'Pengguna';
             border-radius: 12px;
             padding: 0.6rem 1rem;
             margin-bottom: 0.3rem;
-            transition: all 0.2s;
+            transition: background 0.2s, color 0.2s;
             font-weight: 500;
         }
         .offcanvas .nav-link:hover,
         .offcanvas .nav-link.active {
             background: var(--maroon-dark);
             color: white;
-            transform: translateX(4px);
         }
         .offcanvas .nav-link i {
             margin-right: 8px;
             width: 24px;
             text-align: center;
         }
-        /* Animasi hamburger (idle animation) */
+        /* Tombol hamburger tanpa animasi */
         .hamburger-animate {
-            transition: transform 0.2s ease;
+            transition: none;
         }
-        .hamburger-animate:hover {
-            transform: scale(1.1);
-        }
-        /* Card */
         .card-custom {
             background: var(--cream-card);
             border-radius: 24px;
@@ -92,13 +87,11 @@ $name = $_SESSION['name'] ?? 'Pengguna';
             color: white;
             border-radius: 50px;
             padding: 8px 20px;
-            transition: all 0.2s;
+            transition: background 0.2s;
             border: none;
         }
         .btn-maroon:hover {
             background: var(--maroon-light);
-            color: white;
-            transform: translateY(-1px);
         }
         .btn-outline-maroon {
             border: 1px solid var(--maroon-dark);
@@ -122,7 +115,6 @@ $name = $_SESSION['name'] ?? 'Pengguna';
 </head>
 <body>
 
-<!-- Navbar sticky -->
 <nav class="navbar navbar-maroon navbar-dark">
     <div class="container-fluid">
         <?php if (in_array($role, ['admin', 'ustadz', 'orangtua'])): ?>
@@ -147,7 +139,6 @@ $name = $_SESSION['name'] ?? 'Pengguna';
     </div>
 </nav>
 
-<!-- Offcanvas Sidebar -->
 <div class="offcanvas offcanvas-start" tabindex="-1" id="sidebarOffcanvas" aria-labelledby="sidebarOffcanvasLabel">
     <div class="offcanvas-header">
         <h5 class="offcanvas-title" id="sidebarOffcanvasLabel"><i class="bi bi-grid"></i> Menu</h5>
@@ -156,96 +147,35 @@ $name = $_SESSION['name'] ?? 'Pengguna';
     <div class="offcanvas-body">
         <ul class="nav flex-column">
             <?php if ($role === 'admin'): ?>
-                <li class="nav-item">
-                    <a href="index.php?action=admin/dashboard" class="nav-link <?= ($activeMenu ?? '') == 'dashboard' ? 'active' : '' ?>">
-                        <i class="bi bi-speedometer2"></i> Dashboard
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="index.php?action=admin/ustadz" class="nav-link <?= ($activeMenu ?? '') == 'ustadz' ? 'active' : '' ?>">
-                        <i class="bi bi-person-badge"></i> Kelola Ustadz
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="index.php?action=admin/santri" class="nav-link <?= ($activeMenu ?? '') == 'santri' ? 'active' : '' ?>">
-                        <i class="bi bi-people"></i> Kelola Santri
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="index.php?action=admin/kelas" class="nav-link <?= ($activeMenu ?? '') == 'kelas' ? 'active' : '' ?>">
-                        <i class="bi bi-building"></i> Kelola Kelas
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="index.php?action=profile" class="nav-link <?= ($activeMenu ?? '') == 'profile' ? 'active' : '' ?>">
-                        <i class="bi bi-gear"></i> Pengaturan
-                    </a>
-                </li>
+                <li class="nav-item"><a href="index.php?action=admin/dashboard" class="nav-link <?= ($activeMenu ?? '') == 'dashboard' ? 'active' : '' ?>"><i class="bi bi-speedometer2"></i> Dashboard</a></li>
+                <li class="nav-item"><a href="index.php?action=admin/ustadz" class="nav-link <?= ($activeMenu ?? '') == 'ustadz' ? 'active' : '' ?>"><i class="bi bi-person-badge"></i> Kelola Ustadz</a></li>
+                <li class="nav-item"><a href="index.php?action=admin/santri" class="nav-link <?= ($activeMenu ?? '') == 'santri' ? 'active' : '' ?>"><i class="bi bi-people"></i> Kelola Santri</a></li>
+                <li class="nav-item"><a href="index.php?action=admin/kelas" class="nav-link <?= ($activeMenu ?? '') == 'kelas' ? 'active' : '' ?>"><i class="bi bi-building"></i> Kelola Kelas</a></li>
+                <li class="nav-item"><a href="index.php?action=profile" class="nav-link <?= ($activeMenu ?? '') == 'profile' ? 'active' : '' ?>"><i class="bi bi-gear"></i> Pengaturan</a></li>
             <?php elseif ($role === 'ustadz'): ?>
-                <li class="nav-item">
-                    <a href="index.php?action=ustadz/dashboard" class="nav-link <?= ($activeMenu ?? '') == 'dashboard' ? 'active' : '' ?>">
-                        <i class="bi bi-speedometer2"></i> Dashboard
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="index.php?action=ustadz/santri" class="nav-link <?= ($activeMenu ?? '') == 'santri' ? 'active' : '' ?>">
-                        <i class="bi bi-people"></i> Santri Binaan
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="index.php?action=quran" class="nav-link <?= ($activeMenu ?? '') == 'quran' ? 'active' : '' ?>">
-                        <i class="bi bi-book"></i> Baca Quran
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="index.php?action=tajweed-guide" class="nav-link <?= ($activeMenu ?? '') == 'tajweed_guide' ? 'active' : '' ?>">
-                        <i class="bi bi-palette"></i> Panduan Tajwid
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="index.php?action=profile" class="nav-link <?= ($activeMenu ?? '') == 'profile' ? 'active' : '' ?>">
-                        <i class="bi bi-gear"></i> Pengaturan
-                    </a>
-                </li>
+                <li class="nav-item"><a href="index.php?action=ustadz/dashboard" class="nav-link <?= ($activeMenu ?? '') == 'dashboard' ? 'active' : '' ?>"><i class="bi bi-speedometer2"></i> Dashboard</a></li>
+                <li class="nav-item"><a href="index.php?action=ustadz/santri" class="nav-link <?= ($activeMenu ?? '') == 'santri' ? 'active' : '' ?>"><i class="bi bi-people"></i> Santri Binaan</a></li>
+                <li class="nav-item"><a href="index.php?action=quran" class="nav-link <?= ($activeMenu ?? '') == 'quran' ? 'active' : '' ?>"><i class="bi bi-book"></i> Baca Quran</a></li>
+                <li class="nav-item"><a href="index.php?action=tajweed-guide" class="nav-link <?= ($activeMenu ?? '') == 'tajweed_guide' ? 'active' : '' ?>"><i class="bi bi-palette"></i> Panduan Tajwid</a></li>
+                <li class="nav-item"><a href="index.php?action=profile" class="nav-link <?= ($activeMenu ?? '') == 'profile' ? 'active' : '' ?>"><i class="bi bi-gear"></i> Pengaturan</a></li>
             <?php elseif ($role === 'orangtua'): ?>
-                <li class="nav-item">
-                    <a href="index.php?action=orangtua/dashboard" class="nav-link <?= ($activeMenu ?? '') == 'dashboard' ? 'active' : '' ?>">
-                        <i class="bi bi-speedometer2"></i> Dashboard
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="index.php?action=orangtua/santri" class="nav-link <?= ($activeMenu ?? '') == 'santri' ? 'active' : '' ?>">
-                        <i class="bi bi-people"></i> Anak Saya
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="index.php?action=quran" class="nav-link <?= ($activeMenu ?? '') == 'quran' ? 'active' : '' ?>">
-                        <i class="bi bi-book"></i> Baca Quran
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="index.php?action=tajweed-guide" class="nav-link <?= ($activeMenu ?? '') == 'tajweed_guide' ? 'active' : '' ?>">
-                        <i class="bi bi-palette"></i> Panduan Tajwid
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="index.php?action=profile" class="nav-link <?= ($activeMenu ?? '') == 'profile' ? 'active' : '' ?>">
-                        <i class="bi bi-gear"></i> Pengaturan
-                    </a>
-                </li>
+                <li class="nav-item"><a href="index.php?action=orangtua/dashboard" class="nav-link <?= ($activeMenu ?? '') == 'dashboard' ? 'active' : '' ?>"><i class="bi bi-speedometer2"></i> Dashboard</a></li>
+                <li class="nav-item"><a href="index.php?action=orangtua/santri" class="nav-link <?= ($activeMenu ?? '') == 'santri' ? 'active' : '' ?>"><i class="bi bi-people"></i> Anak Saya</a></li>
+                <li class="nav-item"><a href="index.php?action=quran" class="nav-link <?= ($activeMenu ?? '') == 'quran' ? 'active' : '' ?>"><i class="bi bi-book"></i> Baca Quran</a></li>
+                <li class="nav-item"><a href="index.php?action=tajweed-guide" class="nav-link <?= ($activeMenu ?? '') == 'tajweed_guide' ? 'active' : '' ?>"><i class="bi bi-palette"></i> Panduan Tajwid</a></li>
+                <li class="nav-item"><a href="index.php?action=profile" class="nav-link <?= ($activeMenu ?? '') == 'profile' ? 'active' : '' ?>"><i class="bi bi-gear"></i> Pengaturan</a></li>
             <?php endif; ?>
         </ul>
     </div>
 </div>
 
-<!-- Konten utama -->
 <div class="container mt-4">
     <?= $content ?? '<div class="alert alert-warning">Konten tidak tersedia.</div>' ?>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-    // Otomatis tutup offcanvas di mobile setelah klik link
+    // Tutup offcanvas otomatis di mobile
     document.querySelectorAll('.offcanvas .nav-link').forEach(link => {
         link.addEventListener('click', () => {
             const offcanvas = bootstrap.Offcanvas.getInstance(document.getElementById('sidebarOffcanvas'));
