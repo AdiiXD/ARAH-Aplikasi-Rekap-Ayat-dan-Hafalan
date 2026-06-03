@@ -1,28 +1,10 @@
 <?php
-/** @var \App\Models\QuranQuote|null $dailyQuote */
 $title = "Dashboard Admin";
 $activeMenu = "dashboard";
 ob_start();
 ?>
 
-<!-- Quote Card Minimalis -->
-<?php if ($dailyQuote): ?>
-<div class="card-custom p-4 mb-4" style="background: linear-gradient(120deg, #4A1D2E 0%, #6B3A4F 100%); color: white; border: none; border-radius: 24px;">
-    <div class="row align-items-center">
-        <div class="col-12 col-md-9">
-            <small class="text-white-50 text-uppercase tracking-wide"><i class="bi bi-quote"></i> Ayat Hari Ini</small>
-            <div class="arabic-text mt-2" style="font-size: 1.4rem; line-height: 2rem; direction: rtl;"><?= $dailyQuote->arabic_text ?></div>
-            <div class="mt-2 fst-italic"><?= htmlspecialchars($dailyQuote->translation) ?></div>
-            <div class="mt-1"><small class="text-white-50">— <?= $dailyQuote->surah_name ?> : <?= $dailyQuote->ayat_number ?></small></div>
-        </div>
-        <div class="col-12 col-md-3 text-md-end mt-3 mt-md-0">
-            <a href="index.php?action=quran/show&id=<?= $dailyQuote->surah_number ?>" class="btn btn-outline-light btn-sm rounded-pill px-3" style="border-width: 1px;">
-                <i class="bi bi-book-open"></i> Baca Surat
-            </a>
-        </div>
-    </div>
-</div>
-<?php endif; ?>
+
 
 <!-- Rest of dashboard content (statistik, dll) -->
 <div class="card-custom p-4">
