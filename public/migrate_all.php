@@ -1,17 +1,20 @@
 <?php
 /**
- * Migration Runner - Menjalankan migration satu per satu dengan status
+ * Migration Runner - Menjalankan semua migration satu per satu
  * 
- * Usage: 
- * - Browser: http://localhost/hafalan-tracker/public/migrate_all.php
- * - Terminal: php public/migrate_all.php
+ * Cara akses:
+ * - Browser   : http://localhost/hafalan-tracker/public/migrate_all.php
+ * - Terminal  : php public/migrate_all.php
+ * 
+ * Rollback semua migration: http://localhost/hafalan-tracker/public/migrate_all.php?action=rollback
  */
 
 require_once __DIR__ . '/../app/bootstrap.php';
 
 use Illuminate\Database\Capsule\Manager as Capsule;
 
-// Daftar migration files sesuai urutan (001 sampai 012)
+// ========== KONFIGURASI ==========
+// Daftar semua file migration sesuai urutan (001 sampai 013)
 $migrations = [
     '001_create_users_table.php',
     '002_create_kelas_table.php',
@@ -24,14 +27,18 @@ $migrations = [
     '009_create_logs_table.php',
     '010_create_bookmarks_table.php',
     '011_create_quran_quotes_table.php',
-    '012_add_surah_number_to_quran_quotes.php'
+    '012_add_surah_number_to_quran_quotes_table.php',
+    '013_create_quran_listening_logs_table.php'
 ];
 
 $migrationPath = __DIR__ . '/../app/Database/Migrations/';
+$action = $_GET['action'] ?? 'migrate'; // migrate atau rollback
 
+// ========== EKSEKUSI ==========
 echo "========================================\n";
 echo "      MIGRATION RUNNER\n";
-echo "========================================\n\n";
+echo "========================================\n";
+echo "Aksi: " . strtoupper($action) . "\n\n";
 
 // Matikan foreign key checks sementara
 Capsule::statement('SET FOREIGN_KEY_CHECKS=0');
@@ -54,7 +61,7 @@ foreach ($migrations as $index => $file) {
     
     require_once $filePath;
     
-    // Nama class dari nama file (contoh: 001_create_users_table.php -> CreateUsersTable)
+    // Nama class: hilangkan angka prefix, ubah snake_case ke CamelCase
     $className = preg_replace('/^\d+_/', '', pathinfo($file, PATHINFO_FILENAME));
     $className = str_replace('_', '', ucwords($className, '_'));
     
@@ -67,8 +74,6 @@ foreach ($migrations as $index => $file) {
     $migrator = new $className();
     
     try {
-        // Cek aksi dari query string (opsional, untuk rollback)
-        $action = $_GET['action'] ?? 'migrate';
         if ($action === 'rollback') {
             if (method_exists($migrator, 'down')) {
                 $migrator->down();
