@@ -224,4 +224,31 @@ switch ($action) {
     case 'quran/log-play':
         (new \App\Controllers\QuranController())->logPlay();
         break;
+    // Admin Settings
+    case 'admin/settings':
+        (new \App\Controllers\AdminSettingController())->index();
+        break;
+    case 'admin/settings/update':
+        (new \App\Controllers\AdminSettingController())->update();
+        break;
+
+    // Profile & Preferences (untuk semua role)
+    case 'profile':
+        (new \App\Controllers\ProfileController())->index();
+        break;
+    case 'profile/update':
+        (new \App\Controllers\ProfileController())->updateProfile();
+        break;
+    case 'profile/preferences':
+        (new \App\Controllers\ProfileController())->updatePreferences();
+        break;
+    case 'profile/avatar':
+        (new \App\Controllers\ProfileController())->updateAvatar();
+        break;
+    case 'profile/password':
+        (new \App\Controllers\ProfileController())->changePassword();
+        break;
+    case 'profile/upload-picture':
+        (new \App\Controllers\ProfileController())->uploadPicture();
+        break;
 }
