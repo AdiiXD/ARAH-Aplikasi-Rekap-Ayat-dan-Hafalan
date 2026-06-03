@@ -6,7 +6,6 @@ $verses = $verses ?? [];
 $reciters = $reciters ?? [];
 $selectedReciter = $selectedReciter ?? 'ar.alafasy';
 $showTajwid = $showTajwid ?? false;
-$chapters = $chapters ?? []; // daftar surat untuk pencarian
 ?>
 <div class="card-custom p-4" id="quranContainer">
     <div class="d-flex justify-content-between align-items-center mb-4">
@@ -43,7 +42,7 @@ $chapters = $chapters ?? []; // daftar surat untuk pencarian
             $cleanTranslation = preg_replace('/\s+/', ' ', $cleanTranslation);
             $cleanTranslation = trim($cleanTranslation);
         ?>
-        <div class="verse-card mb-4 p-3 border rounded" id="ayat-<?= $verseNumber ?>" data-verse-number="<?= $verseNumber ?>" data-audio-url="<?= htmlspecialchars($audioUrl) ?>">
+        <div class="verse-card mb-4 p-3 border rounded" data-verse-number="<?= $verseNumber ?>" data-audio-url="<?= htmlspecialchars($audioUrl) ?>">
             <div class="d-flex justify-content-between align-items-center flex-wrap">
                 <div>
                     <strong class="badge bg-maroon p-2">Ayat <?= $verseNumber ?></strong>
@@ -157,6 +156,9 @@ document.addEventListener('DOMContentLoaded', function() {
     const toggleTranslation = document.getElementById('toggleTranslation');
     const toggleTajwid = document.getElementById('toggleTajwid');
 
+    // Data surah (untuk log)
+    const currentSurahId = <?= $chapterInfo['id'] ?? 0 ?>;
+
     // Kumpulkan data ayat
     const verseElements = Array.from(document.querySelectorAll('.verse-card'));
     const verseData = verseElements.map(el => {
@@ -174,6 +176,15 @@ document.addEventListener('DOMContentLoaded', function() {
     let currentVerseTime = 0;
     let translationVisible = true;
 
+    // Fungsi untuk mengirim log ke server saat audio mulai diputar
+    function logPlay(surah, ayat) {
+        fetch('index.php?action=quran/log-play', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: 'surah=' + surah + '&ayat=' + ayat
+        }).catch(e => console.error('Gagal kirim log:', e));
+    }
+
     function scrollToVerse(verseNumber) {
         const el = document.querySelector(`.verse-card[data-verse-number="${verseNumber}"]`);
         if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -186,10 +197,20 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         const verse = verseData[index];
         if (!verse.audioUrl) return false;
+        
         scrollToVerse(verse.verseNumber);
-        if (globalAudio.src !== verse.audioUrl) globalAudio.src = verse.audioUrl;
+        
+        if (globalAudio.src !== verse.audioUrl) {
+            globalAudio.src = verse.audioUrl;
+        }
         globalAudio.currentTime = startTime;
-        if (autoPlay) globalAudio.play().catch(e => console.error(e));
+        
+        if (autoPlay) {
+            globalAudio.play().catch(e => console.error('Play error:', e));
+            // Catat log bahwa ayat ini diputar
+            logPlay(currentSurahId, verse.verseNumber);
+        }
+        
         currentPlayingVerse = verse.verseNumber;
         updatePlayButtons(verse.verseNumber, 'pause');
         return true;
@@ -243,6 +264,8 @@ document.addEventListener('DOMContentLoaded', function() {
             globalAudio.currentTime = currentVerseTime;
             globalAudio.play().catch(e => console.error(e));
             updatePlayButtons(verseNumber, 'pause');
+            // Catat log
+            logPlay(currentSurahId, verseNumber);
             return;
         }
         if (currentPlayingVerse !== null && !globalAudio.paused) {
@@ -282,6 +305,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
+    // Event listeners untuk floating panel
     floatPlaySurah.addEventListener('click', startSurah);
     floatStopSurah.addEventListener('click', stopSurahPlayback);
 
@@ -323,6 +347,7 @@ document.addEventListener('DOMContentLoaded', function() {
         form.submit();
     });
 
+    // Tombol play per ayat
     document.querySelectorAll('.btn-play-verse').forEach(btn => {
         btn.addEventListener('click', (e) => {
             e.preventDefault();
@@ -369,6 +394,4 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 });
-
-
 </script>

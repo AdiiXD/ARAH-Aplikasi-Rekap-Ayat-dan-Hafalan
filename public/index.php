@@ -221,4 +221,7 @@ switch ($action) {
     case 'statistics/weekly':
         (new \App\Controllers\StatisticsController())->weekly();
         break;
+    case 'quran/log-play':
+        (new \App\Controllers\QuranController())->logPlay();
+        break;
 }

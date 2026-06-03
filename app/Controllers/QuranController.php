@@ -5,6 +5,7 @@ namespace App\Controllers;
 use App\Helpers\QuranHelper;
 use App\Middleware\AuthMiddleware;
 use App\Middleware\RoleMiddleware;
+use App\Models\QuranListeningLog;
 
 class QuranController
 {
@@ -145,5 +146,39 @@ class QuranController
         include __DIR__ . '/../../views/quran/search.php';
         $content = ob_get_clean();
         include __DIR__ . '/../../views/layouts/main.php';
+    }
+
+    public function logPlay()
+    {
+        // Hanya menerima POST
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            http_response_code(405);
+            echo json_encode(['status' => 'error', 'message' => 'Method not allowed']);
+            exit;
+        }
+
+        $userId = $_SESSION['user_id'] ?? null;
+        if (!$userId) {
+            echo json_encode(['status' => 'error', 'message' => 'Not authenticated']);
+            exit;
+        }
+
+        $surah = (int) ($_POST['surah'] ?? 0);
+        $ayat = (int) ($_POST['ayat'] ?? 0);
+
+        if ($surah <= 0 || $ayat <= 0) {
+            echo json_encode(['status' => 'error', 'message' => 'Invalid surah or ayat']);
+            exit;
+        }
+
+        QuranListeningLog::create([
+            'user_id' => $userId,
+            'surah_number' => $surah,
+            'ayat_number' => $ayat,
+            'played_at' => date('Y-m-d H:i:s')
+        ]);
+
+        echo json_encode(['status' => 'success', 'message' => 'Logged']);
+        exit;
     }
 }
