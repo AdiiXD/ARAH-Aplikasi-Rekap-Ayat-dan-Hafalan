@@ -3,6 +3,7 @@
 /** @var \App\Models\QuranQuote|null $dailyQuote */
 /** @var int $todayAyatCount */
 /** @var \Illuminate\Database\Eloquent\Collection $todayDetails */
+
 $title = "Dashboard Orang Tua";
 $activeMenu = "dashboard";
 ob_start();
@@ -65,6 +66,8 @@ ob_start();
                     <div class="card-body">
                         <h5 class="card-title"><?= htmlspecialchars($anak->nama) ?></h5>
                         <p class="card-text text-muted">
+                            <i class="bi bi-person-badge"></i> NIS: <?= htmlspecialchars($anak->nis ?? '-') ?><br>
+                            <i class="bi bi-person"></i> Panggilan: <?= htmlspecialchars($anak->nickname ?? '-') ?><br>
                             <i class="bi bi-building"></i> Kelas: <?= htmlspecialchars($anak->kelas->nama_kelas ?? '-') ?><br>
                             <i class="bi bi-person-badge"></i> Ustadz: <?= htmlspecialchars($anak->ustadz->name ?? '-') ?>
                         </p>

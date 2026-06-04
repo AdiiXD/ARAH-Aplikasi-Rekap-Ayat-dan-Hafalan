@@ -39,7 +39,9 @@ class AdminSantriController
     public function store()
     {
         $santri = new Santri();
+        $santri->nis = $_POST['nis'];
         $santri->nama = $_POST['nama'];
+        $santri->nickname = $_POST['nickname'];
         $santri->tanggal_lahir = $_POST['tanggal_lahir'];
         $santri->tahun_masuk = $_POST['tahun_masuk'];
         $santri->ustadz_id = $_POST['ustadz_id'];
@@ -65,7 +67,9 @@ class AdminSantriController
     {
         $santri = Santri::findOrFail($id);
         $oldName = $santri->nama;
+        $santri->nis = $_POST['nis'];
         $santri->nama = $_POST['nama'];
+        $santri->nickname = $_POST['nickname'];
         $santri->tanggal_lahir = $_POST['tanggal_lahir'];
         $santri->tahun_masuk = $_POST['tahun_masuk'];
         $santri->ustadz_id = $_POST['ustadz_id'];
@@ -84,9 +88,9 @@ class AdminSantriController
         $santri = Santri::findOrFail($id);
         $name = $santri->nama;
         $santri->delete();
-        
+
         logActivity('Hapus Santri', "Menghapus santri: {$name} (ID {$id})");
-        
+
         $_SESSION['success'] = 'Santri berhasil dihapus.';
         header('Location: index.php?action=admin/santri');
         exit;

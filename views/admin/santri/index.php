@@ -1,5 +1,4 @@
 <?php
-
 /** @var \Illuminate\Database\Eloquent\Collection|\App\Models\Santri[] $santri */
 $title = "Kelola Santri";
 $activeMenu = "santri";
@@ -13,12 +12,10 @@ ob_start();
     </div>
 
     <?php if (isset($_SESSION['success'])): ?>
-        <div class="alert alert-success"><?= $_SESSION['success'];
-                                            unset($_SESSION['success']); ?></div>
+        <div class="alert alert-success"><?= $_SESSION['success']; unset($_SESSION['success']); ?></div>
     <?php endif; ?>
     <?php if (isset($_SESSION['error'])): ?>
-        <div class="alert alert-danger"><?= $_SESSION['error'];
-                                        unset($_SESSION['error']); ?></div>
+        <div class="alert alert-danger"><?= $_SESSION['error']; unset($_SESSION['error']); ?></div>
     <?php endif; ?>
 
     <div class="table-responsive">
@@ -26,7 +23,9 @@ ob_start();
             <thead class="table-light">
                 <tr>
                     <th>ID</th>
+                    <th>NIS</th>
                     <th>Nama Santri</th>
+                    <th>Nickname</th>
                     <th>Ustadz</th>
                     <th>Kelas</th>
                     <th>Aksi</th>
@@ -35,21 +34,23 @@ ob_start();
             <tbody>
                 <?php if ($santri->count() > 0): ?>
                     <?php foreach ($santri as $s): ?>
-                        <tr>
-                            <td><?= $s->id ?></td>
-                            <td><?= htmlspecialchars($s->nama) ?></td>
-                            <td><?= htmlspecialchars($s->ustadz->name ?? '-') ?></td>
-                            <td><?= htmlspecialchars($s->kelas->nama_kelas ?? '-') ?></td>
-                            <td>
-                                <a href="index.php?action=admin/santri/show&id=<?= $s->id ?>" class="btn btn-sm btn-outline-info"><i class="bi bi-eye"></i></a>
-                                <a href="index.php?action=admin/santri/edit&id=<?= $s->id ?>" class="btn btn-sm btn-outline-maroon"><i class="bi bi-pencil"></i></a>
-                                <a href="index.php?action=admin/santri/delete&id=<?= $s->id ?>" class="btn btn-sm btn-outline-danger" onclick="return confirm('Yakin hapus?')"><i class="bi bi-trash"></i></a>
-                            </td>
-                        </tr>
+                    <tr>
+                        <td><?= $s->id ?></td>
+                        <td><?= htmlspecialchars($s->nis) ?></td>
+                        <td><?= htmlspecialchars($s->nama) ?></td>
+                        <td><?= htmlspecialchars($s->nickname ?? '-') ?></td>
+                        <td><?= htmlspecialchars($s->ustadz->name ?? '-') ?></td>
+                        <td><?= htmlspecialchars($s->kelas->nama_kelas ?? '-') ?></td>
+                        <td>
+                            <a href="index.php?action=admin/santri/show&id=<?= $s->id ?>" class="btn btn-sm btn-outline-info" title="Detail"><i class="bi bi-eye"></i></a>
+                            <a href="index.php?action=admin/santri/edit&id=<?= $s->id ?>" class="btn btn-sm btn-outline-maroon" title="Edit"><i class="bi bi-pencil"></i></a>
+                            <a href="index.php?action=admin/santri/delete&id=<?= $s->id ?>" class="btn btn-sm btn-outline-danger" onclick="return confirm('Yakin hapus santri ini?')" title="Hapus"><i class="bi bi-trash"></i></a>
+                        </td>
+                    </tr>
                     <?php endforeach; ?>
                 <?php else: ?>
                     <tr>
-                        <td colspan="5" class="text-center">Belum ada data santri.</td>
+                        <td colspan="7" class="text-center">Belum ada data santri.</td>
                     </tr>
                 <?php endif; ?>
             </tbody>

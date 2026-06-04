@@ -1,4 +1,5 @@
 <?php
+
 /** @var \App\Models\Santri $santri */
 /** @var \Illuminate\Database\Eloquent\Collection|\App\Models\User[] $ustadzList */
 /** @var \Illuminate\Database\Eloquent\Collection|\App\Models\Kelas[] $kelasList */
@@ -15,6 +16,14 @@ ob_start();
             <input type="text" name="nama" class="form-control" value="<?= htmlspecialchars($santri->nama) ?>" required>
         </div>
         <div class="mb-3">
+            <label class="form-label">Nomor Induk Santri (NIS)</label>
+            <input type="text" name="nis" class="form-control" value="<?= htmlspecialchars($santri->nis) ?>" required>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Nama Panggilan (Nickname)</label>
+            <input type="text" name="nickname" class="form-control" value="<?= htmlspecialchars($santri->nickname) ?>">
+        </div>
+        <div class="mb-3">
             <label class="form-label">Tanggal Lahir</label>
             <input type="date" name="tanggal_lahir" class="form-control" value="<?= $santri->tanggal_lahir ?>" required>
         </div>
@@ -27,7 +36,7 @@ ob_start();
             <select name="ustadz_id" class="form-select" required>
                 <option value="">-- Pilih Ustadz --</option>
                 <?php foreach ($ustadzList as $u): ?>
-                <option value="<?= $u->id ?>" <?= $u->id == $santri->ustadz_id ? 'selected' : '' ?>><?= htmlspecialchars($u->name) ?></option>
+                    <option value="<?= $u->id ?>" <?= $u->id == $santri->ustadz_id ? 'selected' : '' ?>><?= htmlspecialchars($u->name) ?></option>
                 <?php endforeach; ?>
             </select>
         </div>
@@ -36,7 +45,7 @@ ob_start();
             <select name="kelas_id" class="form-select" required>
                 <option value="">-- Pilih Kelas --</option>
                 <?php foreach ($kelasList as $k): ?>
-                <option value="<?= $k->id ?>" <?= $k->id == $santri->kelas_id ? 'selected' : '' ?>><?= htmlspecialchars($k->nama_kelas) ?></option>
+                    <option value="<?= $k->id ?>" <?= $k->id == $santri->kelas_id ? 'selected' : '' ?>><?= htmlspecialchars($k->nama_kelas) ?></option>
                 <?php endforeach; ?>
             </select>
         </div>

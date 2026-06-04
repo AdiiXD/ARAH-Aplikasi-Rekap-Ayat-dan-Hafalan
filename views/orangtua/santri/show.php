@@ -1,5 +1,7 @@
 <?php
+
 /** @var \App\Models\Santri $santri */
+
 use Carbon\Carbon;
 
 $title = "Progress Hafalan: " . htmlspecialchars($santri->nama);
@@ -14,6 +16,8 @@ ob_start();
     </div>
     <hr>
     <div class="row">
+        <div class="col-md-6"><strong>NIS:</strong> <?= htmlspecialchars($santri->nis) ?></div>
+        <div class="col-md-6"><strong>Nickname:</strong> <?= htmlspecialchars($santri->nickname) ?></div>
         <div class="col-md-6"><strong>Kelas:</strong> <?= htmlspecialchars($santri->kelas->nama_kelas ?? '-') ?></div>
         <div class="col-md-6"><strong>Ustadz:</strong> <?= htmlspecialchars($santri->ustadz->name ?? '-') ?></div>
         <div class="col-md-6"><strong>Tahun Masuk:</strong> <?= $santri->tahun_masuk ?></div>
@@ -30,15 +34,18 @@ ob_start();
         <div class="table-responsive">
             <table class="table table-sm">
                 <thead class="table-light">
-                    <tr><th>Target</th><th>Deadline</th></tr>
+                    <tr>
+                        <th>Target</th>
+                        <th>Deadline</th>
+                    </tr>
                 </thead>
                 <tbody>
-                <?php foreach ($santri->targetHafalan as $target): ?>
-                <tr>
-                    <td><?= htmlspecialchars($target->target_ayat) ?></td>
-                    <td><?= Carbon::parse($target->deadline)->format('d M Y') ?> <?= $target->deadline < Carbon::now() ? '<span class="badge bg-danger">Lewat</span>' : '' ?></td>
-                </tr>
-                <?php endforeach; ?>
+                    <?php foreach ($santri->targetHafalan as $target): ?>
+                        <tr>
+                            <td><?= htmlspecialchars($target->target_ayat) ?></td>
+                            <td><?= Carbon::parse($target->deadline)->format('d M Y') ?> <?= $target->deadline < Carbon::now() ? '<span class="badge bg-danger">Lewat</span>' : '' ?></td>
+                        </tr>
+                    <?php endforeach; ?>
                 </tbody>
             </table>
         </div>
@@ -54,19 +61,26 @@ ob_start();
         <div class="table-responsive">
             <table class="table table-hover">
                 <thead class="table-light">
-                    <tr><th>Tanggal</th><th>Surat</th><th>Ayat</th><th>Jumlah</th><th>Nilai</th><th>Catatan</th></tr>
+                    <tr>
+                        <th>Tanggal</th>
+                        <th>Surat</th>
+                        <th>Ayat</th>
+                        <th>Jumlah</th>
+                        <th>Nilai</th>
+                        <th>Catatan</th>
+                    </tr>
                 </thead>
                 <tbody>
-                <?php foreach ($santri->setoranHafalan as $setoran): ?>
-                <tr>
-                    <td><?= Carbon::parse($setoran->tgl_setor)->format('d/m/Y') ?></td>
-                    <td><?= htmlspecialchars($setoran->surat) ?></td>
-                    <td><?= $setoran->ayat_mulai ?> - <?= $setoran->ayat_selesai ?></td>
-                    <td><?= $setoran->jumlah_ayat ?> ayat</td>
-                    <td><span class="badge bg-<?= $setoran->nilai_quality == 'A' ? 'success' : ($setoran->nilai_quality == 'B' ? 'warning' : ($setoran->nilai_quality == 'C' ? 'info' : 'danger')) ?>"><?= $setoran->nilai_quality ?></span></td>
-                    <td><?= htmlspecialchars($setoran->catatan) ?></td>
-                </tr>
-                <?php endforeach; ?>
+                    <?php foreach ($santri->setoranHafalan as $setoran): ?>
+                        <tr>
+                            <td><?= Carbon::parse($setoran->tgl_setor)->format('d/m/Y') ?></td>
+                            <td><?= htmlspecialchars($setoran->surat) ?></td>
+                            <td><?= $setoran->ayat_mulai ?> - <?= $setoran->ayat_selesai ?></td>
+                            <td><?= $setoran->jumlah_ayat ?> ayat</td>
+                            <td><span class="badge bg-<?= $setoran->nilai_quality == 'A' ? 'success' : ($setoran->nilai_quality == 'B' ? 'warning' : ($setoran->nilai_quality == 'C' ? 'info' : 'danger')) ?>"><?= $setoran->nilai_quality ?></span></td>
+                            <td><?= htmlspecialchars($setoran->catatan) ?></td>
+                        </tr>
+                    <?php endforeach; ?>
                 </tbody>
             </table>
         </div>
@@ -82,17 +96,22 @@ ob_start();
         <div class="table-responsive">
             <table class="table table-hover">
                 <thead class="table-light">
-                    <tr><th>Tanggal</th><th>Surat</th><th>Ayat</th><th>Jumlah Ulangan</th></tr>
+                    <tr>
+                        <th>Tanggal</th>
+                        <th>Surat</th>
+                        <th>Ayat</th>
+                        <th>Jumlah Ulangan</th>
+                    </tr>
                 </thead>
                 <tbody>
-                <?php foreach ($santri->setoranMurajaah as $m): ?>
-                <tr>
-                    <td><?= Carbon::parse($m->tgl_murajaah)->format('d/m/Y') ?></td>
-                    <td><?= htmlspecialchars($m->surat) ?></td>
-                    <td><?= $m->ayat ?></td>
-                    <td><?= $m->jumlah_ulangan ?> kali</td>
-                </tr>
-                <?php endforeach; ?>
+                    <?php foreach ($santri->setoranMurajaah as $m): ?>
+                        <tr>
+                            <td><?= Carbon::parse($m->tgl_murajaah)->format('d/m/Y') ?></td>
+                            <td><?= htmlspecialchars($m->surat) ?></td>
+                            <td><?= $m->ayat ?></td>
+                            <td><?= $m->jumlah_ulangan ?> kali</td>
+                        </tr>
+                    <?php endforeach; ?>
                 </tbody>
             </table>
         </div>
@@ -107,21 +126,30 @@ ob_start();
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-    const labels = <?php 
-        $bulanData = [];
-        $jumlahData = [];
-        foreach ($santri->setoranHafalan->groupBy(function($item) {
-            return Carbon::parse($item->tgl_setor)->format('Y-m');
-        }) as $bulan => $setorans) {
-            $bulanData[] = $bulan;
-            $jumlahData[] = $setorans->sum('jumlah_ayat');
-        }
-        echo json_encode($bulanData);
-    ?>;
+    const labels = <?php
+                    $bulanData = [];
+                    $jumlahData = [];
+                    foreach (
+                        $santri->setoranHafalan->groupBy(function ($item) {
+                            return Carbon::parse($item->tgl_setor)->format('Y-m');
+                        }) as $bulan => $setorans
+                    ) {
+                        $bulanData[] = $bulan;
+                        $jumlahData[] = $setorans->sum('jumlah_ayat');
+                    }
+                    echo json_encode($bulanData);
+                    ?>;
     const dataJumlah = <?= json_encode($jumlahData) ?>;
     new Chart(document.getElementById('hafalanChart'), {
         type: 'bar',
-        data: { labels: labels, datasets: [{ label: 'Jumlah Ayat', data: dataJumlah, backgroundColor: '#4A1D2E' }] }
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Jumlah Ayat',
+                data: dataJumlah,
+                backgroundColor: '#4A1D2E'
+            }]
+        }
     });
 </script>
 

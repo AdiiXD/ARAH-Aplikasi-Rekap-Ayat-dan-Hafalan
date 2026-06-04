@@ -1,4 +1,5 @@
 <?php
+
 /** @var \Illuminate\Database\Eloquent\Collection|\App\Models\User[] $ustadzList */
 /** @var \Illuminate\Database\Eloquent\Collection|\App\Models\Kelas[] $kelasList */
 $title = "Tambah Santri";
@@ -14,6 +15,15 @@ ob_start();
             <input type="text" name="nama" class="form-control" required>
         </div>
         <div class="mb-3">
+            <label class="form-label">Nomor Induk Santri (NIS) <span class="text-danger">*</span></label>
+            <input type="text" name="nis" class="form-control" placeholder="Contoh: 12345" required>
+            <small class="text-muted">Harus unik, digunakan untuk identifikasi.</small>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Nama Panggilan (Nickname)</label>
+            <input type="text" name="nickname" class="form-control" placeholder="Contoh: Ucup">
+        </div>
+        <div class="mb-3">
             <label class="form-label">Tanggal Lahir</label>
             <input type="date" name="tanggal_lahir" class="form-control" required>
         </div>
@@ -26,7 +36,7 @@ ob_start();
             <select name="ustadz_id" class="form-select" required>
                 <option value="">-- Pilih Ustadz --</option>
                 <?php foreach ($ustadzList as $u): ?>
-                <option value="<?= $u->id ?>"><?= htmlspecialchars($u->name) ?> (<?= $u->email ?>)</option>
+                    <option value="<?= $u->id ?>"><?= htmlspecialchars($u->name) ?> (<?= $u->email ?>)</option>
                 <?php endforeach; ?>
             </select>
         </div>
@@ -35,7 +45,7 @@ ob_start();
             <select name="kelas_id" class="form-select" required>
                 <option value="">-- Pilih Kelas --</option>
                 <?php foreach ($kelasList as $k): ?>
-                <option value="<?= $k->id ?>"><?= htmlspecialchars($k->nama_kelas) ?></option>
+                    <option value="<?= $k->id ?>"><?= htmlspecialchars($k->nama_kelas) ?></option>
                 <?php endforeach; ?>
             </select>
         </div>
