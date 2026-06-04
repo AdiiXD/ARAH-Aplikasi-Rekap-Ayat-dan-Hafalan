@@ -1,21 +1,21 @@
 <?php
 /**
- * Migration Runner - Menjalankan semua migration satu per satu
+ * Migration Runner - Menjalankan semua migration di folder app/Database/Migrations/
  * 
- * Cara akses:
- * - Browser   : http://localhost/hafalan-tracker/public/migrate_all.php
- * - Terminal  : php public/migrate_all.php
+ * Cara akses: http://localhost/hafalan-tracker/public/migrate_all.php
  * 
- * Rollback: ?action=rollback
+ * Untuk rollback (hapus semua tabel): http://localhost/hafalan-tracker/public/migrate_all.php?action=rollback
  */
 
 require_once __DIR__ . '/../app/bootstrap.php';
 
 use Illuminate\Database\Capsule\Manager as Capsule;
 
+// Konfigurasi
 $migrationPath = __DIR__ . '/../app/Database/Migrations/';
-$action = $_GET['action'] ?? 'migrate';
+$action = $_GET['action'] ?? 'migrate'; // migrate atau rollback
 
+// Ambil semua file migration dengan pola [0-9][0-9][0-9]_*.php
 $files = glob($migrationPath . '[0-9][0-9][0-9]_*.php');
 if (empty($files)) {
     die("❌ Tidak ada file migration ditemukan di folder $migrationPath\n");
@@ -23,6 +23,7 @@ if (empty($files)) {
 natsort($files);
 $migrationFiles = array_values($files);
 
+// Fungsi konversi snake_case ke PascalCase
 function snakeToPascal(string $snake): string
 {
     return str_replace('_', '', ucwords($snake, '_'));
@@ -33,6 +34,7 @@ echo "      MIGRATION RUNNER\n";
 echo "========================================\n";
 echo "Aksi: " . strtoupper($action) . "\n\n";
 
+// Nonaktifkan foreign key checks sementara
 Capsule::statement('SET FOREIGN_KEY_CHECKS=0');
 
 $total = count($migrationFiles);
@@ -50,12 +52,14 @@ foreach ($migrationFiles as $index => $filePath) {
     $baseName = preg_replace('/^\d+_/', '', pathinfo($fileName, PATHINFO_FILENAME));
     $className = snakeToPascal($baseName);
 
+    // Cek apakah class ditemukan, jika tidak coba alternatif nama (fallback)
     if (!class_exists($className)) {
         $alternatives = [
             'AddProfilePictureToUserTable',
             'AddProfilePictureToUsertable',
             'AddProfilePictureToUsersTable',
-            'AddAvatarToUserTable'
+            'AddAvatarToUserTable',
+            'CreateActivityLogsTable'
         ];
         $found = false;
         foreach ($alternatives as $alt) {
@@ -97,6 +101,7 @@ foreach ($migrationFiles as $index => $filePath) {
     }
 }
 
+// Aktifkan kembali foreign key checks
 Capsule::statement('SET FOREIGN_KEY_CHECKS=1');
 
 echo "\n========================================\n";
