@@ -22,6 +22,13 @@ class AdminSantriController
         include __DIR__ . '/../../views/admin/santri/index.php';
     }
 
+    public function show(int $id)
+    {
+        $santri = Santri::with(['ustadz', 'kelas', 'targetHafalan', 'setoranHafalan', 'setoranMurajaah'])
+            ->findOrFail($id);
+        include __DIR__ . '/../../views/admin/santri/show.php';
+    }
+
     public function create()
     {
         $ustadzList = User::where('role', 'ustadz')->get();
@@ -39,12 +46,13 @@ class AdminSantriController
         $santri->kelas_id = $_POST['kelas_id'];
         $santri->save();
 
+        logActivity('Tambah Santri', "Menambah santri: {$santri->nama} (ID {$santri->id})");
+
         $_SESSION['success'] = 'Santri berhasil ditambahkan.';
         header('Location: index.php?action=admin/santri');
         exit;
     }
 
-    // PERBAIKAN: tambah type hint int
     public function edit(int $id)
     {
         $santri = Santri::findOrFail($id);
@@ -53,10 +61,10 @@ class AdminSantriController
         include __DIR__ . '/../../views/admin/santri/edit.php';
     }
 
-    // PERBAIKAN: tambah type hint int
     public function update(int $id)
     {
         $santri = Santri::findOrFail($id);
+        $oldName = $santri->nama;
         $santri->nama = $_POST['nama'];
         $santri->tanggal_lahir = $_POST['tanggal_lahir'];
         $santri->tahun_masuk = $_POST['tahun_masuk'];
@@ -64,25 +72,23 @@ class AdminSantriController
         $santri->kelas_id = $_POST['kelas_id'];
         $santri->save();
 
+        logActivity('Update Santri', "Mengupdate santri ID {$id} dari '{$oldName}' menjadi '{$santri->nama}'");
+
         $_SESSION['success'] = 'Santri berhasil diperbarui.';
         header('Location: index.php?action=admin/santri');
         exit;
     }
 
-    // PERBAIKAN: tambah type hint int
     public function destroy(int $id)
     {
         $santri = Santri::findOrFail($id);
-        // Hapus relasi orangtua_santri dulu (foreign key cascade akan otomatis jika di migration sudah onDelete cascade)
+        $name = $santri->nama;
         $santri->delete();
+        
+        logActivity('Hapus Santri', "Menghapus santri: {$name} (ID {$id})");
+        
         $_SESSION['success'] = 'Santri berhasil dihapus.';
         header('Location: index.php?action=admin/santri');
         exit;
-    }
-    public function show(int $id)
-    {
-        $santri = Santri::with(['ustadz', 'kelas', 'targetHafalan', 'setoranHafalan', 'setoranMurajaah', 'orangTua'])
-            ->findOrFail($id);
-        include __DIR__ . '/../../views/admin/santri/show.php';
     }
 }

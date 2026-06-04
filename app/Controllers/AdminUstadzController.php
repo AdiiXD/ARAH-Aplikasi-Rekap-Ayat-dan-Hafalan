@@ -3,6 +3,7 @@
 namespace App\Controllers;
 
 use App\Models\User;
+use App\Models\Santri;
 use App\Middleware\AuthMiddleware;
 use App\Middleware\RoleMiddleware;
 
@@ -34,12 +35,18 @@ class AdminUstadzController
             exit;
         }
 
+        $name = $_POST['name'];
+        $email = $_POST['email'];
+        $password = $_POST['password'];
+
         $user = new User();
-        $user->name = $_POST['name'];
-        $user->email = $_POST['email'];
-        $user->password = password_hash($_POST['password'], PASSWORD_DEFAULT);
+        $user->name = $name;
+        $user->email = $email;
+        $user->password = password_hash($password, PASSWORD_DEFAULT);
         $user->role = 'ustadz';
         $user->save();
+
+        logActivity('Tambah Ustadz', "Menambah ustadz baru: {$name} ({$email})");
 
         $_SESSION['success'] = 'Ustadz berhasil ditambahkan.';
         header('Location: index.php?action=admin/ustadz');
@@ -66,6 +73,8 @@ class AdminUstadzController
         }
         $ustadz->save();
 
+        logActivity('Update Ustadz', "Mengupdate ustadz ID {$id} - {$ustadz->name}");
+
         $_SESSION['success'] = 'Ustadz berhasil diperbarui.';
         header('Location: index.php?action=admin/ustadz');
         exit;
@@ -74,11 +83,12 @@ class AdminUstadzController
     public function destroy(int $id)
     {
         $ustadz = User::findOrFail($id);
-        // Cek apakah ustadz memiliki santri
+        $name = $ustadz->name;
         if ($ustadz->santrisAsUstadz && $ustadz->santrisAsUstadz()->count() > 0) {
             $_SESSION['error'] = 'Ustadz tidak bisa dihapus karena masih membimbing santri.';
         } else {
             $ustadz->delete();
+            logActivity('Hapus Ustadz', "Menghapus ustadz: {$name} (ID {$id})");
             $_SESSION['success'] = 'Ustadz berhasil dihapus.';
         }
         header('Location: index.php?action=admin/ustadz');

@@ -32,6 +32,8 @@ class AdminKelasController
         $kelas->deskripsi = $_POST['deskripsi'] ?? null;
         $kelas->save();
 
+        logActivity('Tambah Kelas', "Menambah kelas: {$kelas->nama_kelas} (ID {$kelas->id})");
+
         $_SESSION['success'] = 'Kelas berhasil ditambahkan.';
         header('Location: index.php?action=admin/kelas');
         exit;
@@ -46,9 +48,12 @@ class AdminKelasController
     public function update(int $id)
     {
         $kelas = Kelas::findOrFail($id);
+        $oldName = $kelas->nama_kelas;
         $kelas->nama_kelas = $_POST['nama_kelas'];
         $kelas->deskripsi = $_POST['deskripsi'] ?? null;
         $kelas->save();
+
+        logActivity('Update Kelas', "Mengupdate kelas ID {$id} dari '{$oldName}' menjadi '{$kelas->nama_kelas}'");
 
         $_SESSION['success'] = 'Kelas berhasil diperbarui.';
         header('Location: index.php?action=admin/kelas');
@@ -58,11 +63,12 @@ class AdminKelasController
     public function destroy(int $id)
     {
         $kelas = Kelas::findOrFail($id);
-        // Cek apakah kelas memiliki santri
+        $name = $kelas->nama_kelas;
         if ($kelas->santris()->count() > 0) {
             $_SESSION['error'] = 'Kelas tidak bisa dihapus karena masih memiliki santri.';
         } else {
             $kelas->delete();
+            logActivity('Hapus Kelas', "Menghapus kelas: {$name} (ID {$id})");
             $_SESSION['success'] = 'Kelas berhasil dihapus.';
         }
         header('Location: index.php?action=admin/kelas');

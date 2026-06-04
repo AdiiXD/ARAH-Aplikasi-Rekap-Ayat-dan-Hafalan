@@ -251,4 +251,13 @@ switch ($action) {
     case 'profile/upload-picture':
         (new \App\Controllers\ProfileController())->uploadPicture();
         break;
+    case 'admin/backup':
+        (new \App\Controllers\AdminDashboardController())->backup();
+        break;
+    case 'admin/logs':
+        (new \App\Controllers\AdminDashboardController())->logs();
+        break;
+    case 'admin/clear-logs':
+        (new \App\Controllers\AdminDashboardController())->clearLogs();
+        break;
 }

@@ -33,3 +33,5 @@ $capsule->bootEloquent();
 
 // Set timezone
 date_default_timezone_set($_ENV['APP_TIMEZONE'] ?? 'Asia/Jakarta');
+
+require_once __DIR__ . '/helpers/LogHelper.php';

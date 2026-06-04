@@ -3,6 +3,8 @@
 namespace App\Controllers;
 
 use App\Models\User;
+use App\Middleware\AuthMiddleware;
+use App\Middleware\RoleMiddleware;
 use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
 use PHPMailer\PHPMailer\PHPMailer;
@@ -11,7 +13,7 @@ use Carbon\Carbon;
 
 class AuthController
 {
-    private Logger $logger;  // Tambah type hint
+    private Logger $logger; // <-- tambah type hint
 
     public function __construct()
     {
@@ -42,6 +44,9 @@ class AuthController
             $_SESSION['role'] = $user->role;
             $_SESSION['email'] = $user->email;
 
+            // Log aktivitas login
+            logActivity('Login', "User {$user->email} berhasil login");
+
             $this->logger->info("Login berhasil", ['email' => $email, 'role' => $user->role]);
             $this->redirectBasedOnRole($user->role);
         } else {
@@ -54,7 +59,15 @@ class AuthController
 
     public function logout(): void
     {
-        $this->logger->info("Logout", ['user_id' => $_SESSION['user_id'] ?? 'unknown']);
+        $userId = $_SESSION['user_id'] ?? null;
+        $email = $_SESSION['email'] ?? 'unknown';
+        
+        // Log aktivitas logout
+        if ($userId) {
+            logActivity('Logout', "User {$email} logout");
+        }
+        
+        $this->logger->info("Logout", ['user_id' => $userId]);
         session_destroy();
         header('Location: index.php?action=login');
         exit;
@@ -96,6 +109,10 @@ class AuthController
             $resetLink = $_ENV['APP_URL'] . "/index.php?action=reset&token=" . $token;
             $mail->Body    = "Klik link berikut untuk reset password: <a href='$resetLink'>$resetLink</a>";
             $mail->send();
+            
+            // Log permintaan reset
+            logActivity('Lupa Password', "User {$email} meminta reset password");
+            
             $_SESSION['success'] = 'Link reset telah dikirim ke email Anda.';
         } catch (Exception $e) {
             $this->logger->error("Email gagal dikirim", ['error' => $mail->ErrorInfo]);
@@ -105,7 +122,6 @@ class AuthController
         exit;
     }
 
-    // Tambah type hint parameter dan return type
     private function redirectBasedOnRole(string $role): void
     {
         switch ($role) {
