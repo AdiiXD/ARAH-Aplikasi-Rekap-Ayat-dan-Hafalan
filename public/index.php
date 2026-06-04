@@ -260,4 +260,12 @@ switch ($action) {
     case 'admin/clear-logs':
         (new \App\Controllers\AdminDashboardController())->clearLogs();
         break;
+    case 'register':
+        $controller = new \App\Controllers\RegisterController();
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $controller->register();
+        } else {
+            $controller->showForm();
+        }
+        break;
 }

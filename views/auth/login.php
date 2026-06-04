@@ -6,6 +6,7 @@ unset($_SESSION['error'], $_SESSION['success']);
 ?>
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
@@ -22,7 +23,8 @@ unset($_SESSION['error'], $_SESSION['success']);
         }
 
         body {
-            background: #FDF8F0; /* cream background */
+            background: #FDF8F0;
+            /* cream background */
             font-family: 'Inter', sans-serif;
             min-height: 100vh;
             display: flex;
@@ -173,70 +175,76 @@ unset($_SESSION['error'], $_SESSION['success']);
             .login-card {
                 padding: 1.5rem;
             }
+
             .login-header h1 {
                 font-size: 1.5rem;
             }
         }
     </style>
 </head>
+
 <body>
 
-<div class="login-card">
-    <div class="login-header">
-        <div class="logo-icon">
-            <i class="bi bi-book-half"></i>
-        </div>
-        <h1>Hafalan Tracker</h1>
-        <p>Masuk ke dashboard Anda</p>
-    </div>
-
-    <?php if ($error): ?>
-        <div class="alert alert-custom alert-danger-custom">
-            <i class="bi bi-exclamation-triangle-fill me-2"></i> <?= htmlspecialchars($error) ?>
-        </div>
-    <?php endif; ?>
-
-    <?php if ($success): ?>
-        <div class="alert alert-custom alert-success-custom">
-            <i class="bi bi-check-circle-fill me-2"></i> <?= htmlspecialchars($success) ?>
-        </div>
-    <?php endif; ?>
-
-    <form method="POST" action="index.php?action=login">
-        <div class="mb-3">
-            <label class="form-label">Alamat Email</label>
-            <div class="input-group-custom d-flex align-items-center">
-                <span style="padding-left: 1rem; color:#6B6B6B;"><i class="bi bi-envelope"></i></span>
-                <input type="email" name="email" class="form-control-custom" placeholder="admin@hafalan.com" required autofocus>
+    <div class="login-card">
+        <div class="login-header">
+            <div class="logo-icon">
+                <i class="bi bi-book-half"></i>
             </div>
+            <h1>Hafalan Tracker</h1>
+            <p>Masuk ke dashboard Anda</p>
         </div>
 
-        <div class="mb-4">
-            <label class="form-label">Kata Sandi</label>
-            <div class="input-group-custom d-flex align-items-center">
-                <span style="padding-left: 1rem; color:#6B6B6B;"><i class="bi bi-lock"></i></span>
-                <input type="password" name="password" class="form-control-custom" placeholder="********" required>
+        <?php if ($error): ?>
+            <div class="alert alert-custom alert-danger-custom">
+                <i class="bi bi-exclamation-triangle-fill me-2"></i> <?= htmlspecialchars($error) ?>
             </div>
-        </div>
+        <?php endif; ?>
 
-        <button type="submit" class="btn btn-maroon">
-            <i class="bi bi-box-arrow-in-right me-2"></i> Masuk
-        </button>
+        <?php if ($success): ?>
+            <div class="alert alert-custom alert-success-custom">
+                <i class="bi bi-check-circle-fill me-2"></i> <?= htmlspecialchars($success) ?>
+            </div>
+        <?php endif; ?>
 
-        <hr>
+        <form method="POST" action="index.php?action=login">
+            <div class="mb-3">
+                <label class="form-label">Alamat Email</label>
+                <div class="input-group-custom d-flex align-items-center">
+                    <span style="padding-left: 1rem; color:#6B6B6B;"><i class="bi bi-envelope"></i></span>
+                    <input type="email" name="email" class="form-control-custom" placeholder="admin@hafalan.com" required autofocus>
+                </div>
+            </div>
 
-        <div class="text-center">
-            <a href="index.php?action=forgot" class="forgot-link">
-                <i class="bi bi-question-circle"></i> Lupa password?
-            </a>
-        </div>
-    </form>
+            <div class="mb-4">
+                <label class="form-label">Kata Sandi</label>
+                <div class="input-group-custom d-flex align-items-center">
+                    <span style="padding-left: 1rem; color:#6B6B6B;"><i class="bi bi-lock"></i></span>
+                    <input type="password" name="password" class="form-control-custom" placeholder="********" required>
+                </div>
+            </div>
 
-    <!-- <div class="mt-3 text-center text-muted small">
+            <button type="submit" class="btn btn-maroon">
+                <i class="bi bi-box-arrow-in-right me-2"></i> Masuk
+            </button>
+
+            <hr>
+            <div class="text-center mt-3">
+                Belum punya akun? <a href="index.php?action=register">Daftar sebagai Orang Tua</a>
+            </div>
+
+            <div class="text-center">
+                <a href="index.php?action=forgot" class="forgot-link">
+                    <i class="bi bi-question-circle"></i> Lupa password?
+                </a>
+            </div>
+        </form>
+
+        <!-- <div class="mt-3 text-center text-muted small">
         <span>Demo: admin@hafalan.com / password</span><br>
         <span>ustadz@hafalan.com / password | orangtua@example.com / password</span>
     </div> -->
-</div>
+    </div>
 
 </body>
+
 </html>
