@@ -50,6 +50,8 @@ class UstadzSetoranController
         $setoran->tgl_setor = $_POST['tgl_setor'] ?? Carbon::today();
         $setoran->save();
 
+        logActivity('Tambah Setoran Hafalan', "Ustadz ID {$_SESSION['user_id']} menambah setoran untuk santri ID {$santriId}, surat {$setoran->surat} ayat {$setoran->ayat_mulai}-{$setoran->ayat_selesai}");
+
         // Kirim notifikasi ke orang tua
         foreach ($santri->orangTua as $ortu) {
             Notifikasi::create([
