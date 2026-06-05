@@ -268,4 +268,10 @@ switch ($action) {
             $controller->showForm();
         }
         break;
+    case 'orangtua/anak/create':
+        (new \App\Controllers\OrangtuaAnakController())->create();
+        break;
+    case 'orangtua/anak/store':
+        (new \App\Controllers\OrangtuaAnakController())->store();
+        break;
 }
