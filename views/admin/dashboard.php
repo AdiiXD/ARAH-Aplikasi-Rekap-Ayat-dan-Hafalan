@@ -12,34 +12,28 @@
 /** @var array $dailyData */
 /** @var \Illuminate\Database\Eloquent\Collection $recentLogs */
 
-$title = "Dashboard Admin";
+$title = "Dashboard Admin - ARAH";
 $activeMenu = "dashboard";
+ // bersihkan buffer untuk mencegah duplikat
 ?>
-<div class="row">
-    <div class="col-md-12">
-        <h3>Dashboard Admin</h3>
-        <hr>
-    </div>
-</div>
 
-<!-- Statistik Cards -->
 <div class="row g-4 mb-4">
     <div class="col-md-4">
-        <div class="card-custom p-3 text-center">
+        <div class="card-custom p-3 text-center hover-scale">
             <i class="bi bi-people fs-1 text-maroon"></i>
             <h2 class="mt-2"><?= $totalSantri ?></h2>
             <span>Total Santri</span>
         </div>
     </div>
     <div class="col-md-4">
-        <div class="card-custom p-3 text-center">
+        <div class="card-custom p-3 text-center hover-scale">
             <i class="bi bi-person-badge fs-1 text-maroon"></i>
             <h2 class="mt-2"><?= $totalUstadz ?></h2>
             <span>Total Ustadz</span>
         </div>
     </div>
     <div class="col-md-4">
-        <div class="card-custom p-3 text-center">
+        <div class="card-custom p-3 text-center hover-scale">
             <i class="bi bi-journal-bookmark-fill fs-1 text-maroon"></i>
             <h2 class="mt-2"><?= $todaySetoran ?></h2>
             <span>Setoran Hari Ini (Ayat)</span>
@@ -47,8 +41,7 @@ $activeMenu = "dashboard";
     </div>
 </div>
 
-<!-- Grafik 1 -->
-<div class="row mb-4">
+<div class="row g-4 mb-4">
     <div class="col-md-12">
         <div class="card-custom p-4">
             <h5><i class="bi bi-graph-up"></i> Perkembangan Santri & Ustadz (6 Bulan Terakhir)</h5>
@@ -57,11 +50,10 @@ $activeMenu = "dashboard";
     </div>
 </div>
 
-<!-- Grafik 2 & 3 -->
-<div class="row mb-4">
+<div class="row g-4 mb-4">
     <div class="col-md-6">
         <div class="card-custom p-4">
-            <h5><i class="bi bi-trophy"></i> Top 5 Ustadz Berdasarkan Setoran Santri</h5>
+            <h5><i class="bi bi-trophy"></i> Top 5 Ustadz (Berdasarkan Setoran Santri)</h5>
             <canvas id="topUstadzChart" height="200"></canvas>
         </div>
     </div>
@@ -73,8 +65,7 @@ $activeMenu = "dashboard";
     </div>
 </div>
 
-<!-- Grafik 4 -->
-<div class="row mb-4">
+<div class="row g-4 mb-4">
     <div class="col-md-12">
         <div class="card-custom p-4">
             <h5><i class="bi bi-graph-up"></i> Tren Setoran Ayat (30 Hari Terakhir)</h5>
@@ -83,30 +74,28 @@ $activeMenu = "dashboard";
     </div>
 </div>
 
-<!-- Tombol Backup & Log -->
-<div class="row mb-4">
+<div class="row g-4 mb-4">
     <div class="col-md-6">
         <div class="card-custom p-4 text-center">
             <h5><i class="bi bi-database"></i> Backup Database</h5>
-            <a href="index.php?action=admin/backup" class="btn btn-maroon mt-2" onclick="return confirm('Yakin melakukan backup?')">Backup Sekarang</a>
+            <a href="index.php?action=admin/backup" class="btn btn-maroon rounded-pill mt-2" onclick="return confirm('Yakin melakukan backup?')">Backup Sekarang</a>
         </div>
     </div>
     <div class="col-md-6">
         <div class="card-custom p-4 text-center">
             <h5><i class="bi bi-clock-history"></i> Log Aktivitas</h5>
-            <a href="index.php?action=admin/logs" class="btn btn-outline-maroon mt-2">Lihat Log</a>
+            <a href="index.php?action=admin/logs" class="btn btn-outline-maroon rounded-pill mt-2">Lihat Log</a>
         </div>
     </div>
 </div>
 
-<!-- Recent Logs -->
 <div class="row">
     <div class="col-md-12">
         <div class="card-custom p-4">
             <h5><i class="bi bi-list-ul"></i> Aktivitas Terbaru</h5>
             <div class="table-responsive">
-                <table class="table table-sm">
-                    <thead>
+                <table class="table table-sm align-middle">
+                    <thead class="table-light">
                         <tr><th>Waktu</th><th>User</th><th>Role</th><th>Aksi</th><th>Deskripsi</th><th>IP</th></tr>
                     </thead>
                     <tbody>
@@ -161,3 +150,8 @@ $activeMenu = "dashboard";
         }
     });
 </script>
+
+<style>
+    .hover-scale { transition: transform 0.2s ease; }
+    .hover-scale:hover { transform: translateY(-5px); }
+</style>
