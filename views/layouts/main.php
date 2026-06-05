@@ -187,7 +187,7 @@ $isOrangTua = ($role === 'orangtua');
 
 <div class="offcanvas offcanvas-start" tabindex="-1" id="sidebarOffcanvas" aria-labelledby="sidebarOffcanvasLabel">
     <div class="offcanvas-header">
-        <h5 class="offcanvas-title" id="sidebarOffcanvasLabel"><i class="bi bi-grid"></i> Menu ARAH</h5>
+        <h5 class="offcanvas-title" id="sidebarOffcanvasLabel"><i class="bi bi-grid"></i> Menu </h5>
         <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Tutup"></button>
     </div>
     <div class="offcanvas-body">
