@@ -1,13 +1,12 @@
 <?php
 /** @var \App\Models\SetoranHafalan $setoran */
 use Carbon\Carbon;
-$title = "Edit Setoran Hafalan";
+$title = "Edit Setoran Hafalan - ARAH";
 $activeMenu = "santri";
 ob_start();
 ?>
-
 <div class="card-custom p-4 mx-auto" style="max-width: 600px;">
-    <h3>Edit Setoran Hafalan</h3>
+    <h3><i class="bi bi-pencil-square"></i> Edit Setoran Hafalan</h3>
     <form method="POST" action="index.php?action=ustadz/setoran/update_hafalan&id=<?= $setoran->id ?>">
         <div class="mb-3"><label>Surat</label><input type="text" name="surat" class="form-control" value="<?= htmlspecialchars($setoran->surat) ?>" required></div>
         <div class="row">
@@ -25,12 +24,11 @@ ob_start();
         </div>
         <div class="mb-3"><label>Catatan</label><textarea name="catatan" class="form-control"><?= htmlspecialchars($setoran->catatan) ?></textarea></div>
         <div class="mb-3"><label>Tanggal Setor</label><input type="date" name="tgl_setor" class="form-control" value="<?= $setoran->tgl_setor ?>"></div>
-        <button type="submit" class="btn btn-maroon w-100">Update</button>
-        <a href="index.php?action=ustadz/santri/show&id=<?= $setoran->santri_id ?>" class="btn btn-secondary w-100 mt-2">Batal</a>
+        <button type="submit" class="btn btn-maroon w-100 rounded-pill">Update</button>
+        <a href="index.php?action=ustadz/santri/show&id=<?= $setoran->santri_id ?>" class="btn btn-secondary w-100 mt-2 rounded-pill">Batal</a>
     </form>
 </div>
-
 <?php
 $content = ob_get_clean();
-include __DIR__ . '/../../layouts/main.php';
+include __DIR__ . '/../../../layouts/main.php';
 ?>

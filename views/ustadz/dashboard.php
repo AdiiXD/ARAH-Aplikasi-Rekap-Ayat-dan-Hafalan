@@ -4,75 +4,89 @@
 /** @var int $todayAyatCount */
 /** @var \Illuminate\Database\Eloquent\Collection $todayDetails */
 
-$title = "Dashboard Ustadz";
+$santriList = $santriList ?? collect();
+$dailyQuote = $dailyQuote ?? null;
+$todayAyatCount = $todayAyatCount ?? 0;
+$todayDetails = $todayDetails ?? collect();
+
+$title = "Dashboard Ustadz - ARAH";
 $activeMenu = "dashboard";
 ob_start();
 ?>
 
-<!-- Statistik bacaan hari ini -->
-<div class="card-custom p-3 mb-4">
-    <div class="d-flex justify-content-between align-items-center">
-        <div>
-            <i class="bi bi-earbuds fs-2 text-maroon"></i>
-        </div>
-        <div class="text-end">
-            <h3 class="mb-0"><?= $todayAyatCount ?> Ayat</h3>
-            <small class="text-muted">Dibaca/Didengarkan Hari Ini</small>
-        </div>
-    </div>
-    <?php if ($todayDetails && $todayDetails->isNotEmpty()): ?>
-    <hr>
-    <div class="small text-muted">
-        <?php foreach ($todayDetails as $detail): ?>
-        <div>📖 Surah <?= $detail->surah_number ?>: <?= $detail->total ?> ayat</div>
-        <?php endforeach; ?>
-    </div>
-    <?php endif; ?>
-</div>
-
 <!-- Quote of the Day -->
 <?php if ($dailyQuote): ?>
-<div class="card-custom p-3 mb-4" style="background: linear-gradient(135deg, #4A1D2E 0%, #7A3F5A 100%); color: white;">
-    <div class="d-flex justify-content-between align-items-center">
-        <div>
-            <small class="text-white-50"><i class="bi bi-quote"></i> Ayat Hari Ini</small>
-            <div class="arabic-text mt-1" style="font-size: 1.2rem; direction: rtl;"><?= $dailyQuote->arabic_text ?></div>
-            <div class="mt-1"><?= htmlspecialchars($dailyQuote->translation) ?></div>
-            <small class="text-white-50">— <?= $dailyQuote->surah_name ?> : <?= $dailyQuote->ayat_number ?></small>
+<div class="card-custom p-4 mb-4" style="background: linear-gradient(135deg, #4A1D2E 0%, #7A3F5A 100%); color: white; border-radius: 32px;">
+    <div class="row align-items-center">
+        <div class="col-8">
+            <div class="small text-white-50 mb-1"><i class="bi bi-quote"></i> Kutipan Hari Ini</div>
+            <div class="arabic-text" style="font-size: 1.2rem; direction: rtl;"><?= $dailyQuote->arabic_text ?></div>
+            <div class="mt-2"><?= htmlspecialchars($dailyQuote->translation) ?></div>
+            <div class="mt-2">
+                <a href="index.php?action=quran/show&id=<?= $dailyQuote->surah_number ?>" class="btn btn-sm btn-light rounded-pill px-3">📖 Baca Surat</a>
+            </div>
         </div>
-        <div>
-            <a href="index.php?action=quran/show&id=<?= $dailyQuote->surah_number ?>" class="btn btn-sm btn-outline-light rounded-pill px-3">📖 Baca Surat</a>
+        <div class="col-4 text-end">
+            <i class="bi bi-quote display-1 opacity-25"></i>
         </div>
     </div>
 </div>
 <?php endif; ?>
 
-<!-- Selamat datang -->
+<!-- Statistik Aktivitas Mendengarkan -->
 <div class="card-custom p-4 mb-4">
-    <h3>Selamat datang, Ustadz <?= htmlspecialchars($_SESSION['name'] ?? 'Ustadz') ?></h3>
-    <p class="text-muted">Kelola hafalan santri binaan Anda</p>
+    <div class="row align-items-center">
+        <div class="col-8">
+            <div class="small text-muted mb-1"><i class="bi bi-earbuds"></i> Aktivitas Mendengarkan Hari Ini</div>
+            <h2 class="mb-0"><?= $todayAyatCount ?> Ayat</h2>
+            <small>Total ayat yang dibaca/didengarkan</small>
+        </div>
+        <div class="col-4 text-end">
+            <i class="bi bi-mic display-1 text-maroon opacity-50"></i>
+        </div>
+    </div>
+    <?php if ($todayDetails->isNotEmpty()): ?>
+    <hr>
+    <div class="d-flex flex-wrap gap-2 mt-2">
+        <?php foreach ($todayDetails as $detail): ?>
+        <span class="badge bg-light text-dark rounded-pill">📖 Surah <?= $detail->surah_number ?>: <?= $detail->total ?> ayat</span>
+        <?php endforeach; ?>
+    </div>
+    <?php endif; ?>
 </div>
 
 <!-- Daftar Santri Binaan -->
 <div class="card-custom p-4">
-    <h5 class="mb-3"><i class="bi bi-people"></i> Daftar Santri Binaan</h5>
-    <?php if (empty($santriList) || $santriList->isEmpty()): ?>
-        <div class="alert alert-info">Belum ada santri yang dibimbing.</div>
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="mb-0"><i class="bi bi-people"></i> Santri Binaan</h5>
+        <span class="badge bg-maroon rounded-pill"><?= $santriList->count() ?> Santri</span>
+    </div>
+    <?php if ($santriList->isEmpty()): ?>
+        <div class="text-center py-5">
+            <i class="bi bi-person-x fs-1 text-muted"></i>
+            <p class="mt-2 mb-0">Belum ada santri yang dibimbing.</p>
+        </div>
     <?php else: ?>
-        <div class="row">
+        <div class="row g-3">
             <?php foreach ($santriList as $santri): ?>
-            <div class="col-md-4 mb-3">
-                <div class="card h-100 border-0 shadow-sm">
+            <div class="col-md-6 col-lg-4">
+                <div class="card h-100 border-0 shadow-sm rounded-4 hover-scale">
                     <div class="card-body">
-                        <h5 class="card-title"><?= htmlspecialchars($santri->nama) ?></h5>
-                        <p class="card-text text-muted">
-                            <i class="bi bi-person-badge"></i> NIS: <?= htmlspecialchars($santri->nis ?? '-') ?><br>
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="bg-maroon rounded-circle d-flex align-items-center justify-content-center me-2" style="width: 45px; height: 45px;">
+                                <i class="bi bi-person text-white fs-5"></i>
+                            </div>
+                            <div>
+                                <h6 class="card-title mb-0"><?= htmlspecialchars($santri->nama) ?></h6>
+                                <small class="text-muted">NIS: <?= htmlspecialchars($santri->nis ?? '-') ?></small>
+                            </div>
+                        </div>
+                        <p class="card-text small text-muted mb-2">
                             <i class="bi bi-person"></i> Panggilan: <?= htmlspecialchars($santri->nickname ?? '-') ?><br>
-                            <i class="bi bi-building"></i> Kelas: <?= htmlspecialchars($santri->kelas->nama_kelas ?? '-') ?><br>
-                            <i class="bi bi-calendar"></i> Tahun Masuk: <?= $santri->tahun_masuk ?>
+                            <i class="bi bi-building"></i> Kelas: <?= htmlspecialchars($santri->kelas->nama_kelas ?? '-') ?>
                         </p>
-                        <a href="index.php?action=ustadz/santri/show&id=<?= $santri->id ?>" class="btn btn-maroon btn-sm">
-                            <i class="bi bi-graph-up"></i> Lihat Progress
+                        <a href="index.php?action=ustadz/santri/show&id=<?= $santri->id ?>" class="btn btn-maroon btn-sm w-100 rounded-pill">
+                            Lihat Progress <i class="bi bi-arrow-right"></i>
                         </a>
                     </div>
                 </div>
@@ -81,6 +95,22 @@ ob_start();
         </div>
     <?php endif; ?>
 </div>
+
+<style>
+    .hover-scale {
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .hover-scale:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 12px 24px rgba(0,0,0,0.1) !important;
+    }
+    .bg-maroon {
+        background-color: #4A1D2E;
+    }
+    .text-maroon {
+        color: #4A1D2E;
+    }
+</style>
 
 <?php
 $content = ob_get_clean();
