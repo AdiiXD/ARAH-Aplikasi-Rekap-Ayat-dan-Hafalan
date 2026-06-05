@@ -21,12 +21,12 @@ class AdminDashboardController
 
     public function index()
     {
-        // Statistik
+        // Statistik card
         $totalSantri = Santri::count();
         $totalUstadz = User::where('role', 'ustadz')->count();
         $todaySetoran = SetoranHafalan::whereDate('tgl_setor', Carbon::today())->sum('jumlah_ayat');
 
-        // Grafik perkembangan santri & ustadz per bulan (6 bulan terakhir)
+        // Data grafik perkembangan santri & ustadz (6 bulan terakhir)
         $months = [];
         $santriData = [];
         $ustadzData = [];
@@ -42,25 +42,25 @@ class AdminDashboardController
                 ->count();
         }
 
-        // Top 5 ustadz berdasarkan total setoran ayat santri binaannya
-        $topUstadz = User::where('role', 'ustadz')->get()->map(function ($ustadz) {
+        // Top 5 ustadz berdasarkan total setoran ayat dari santri binaan
+        $topUstadz = User::where('role', 'ustadz')->get()->map(function($ustadz) {
             $total = Santri::where('ustadz_id', $ustadz->id)
                 ->with('setoranHafalan')
                 ->get()
-                ->sum(function ($s) {
-                    return $s->setoranHafalan->sum('jumlah_ayat');
+                ->sum(function($santri) {
+                    return $santri->setoranHafalan->sum('jumlah_ayat');
                 });
-            return (object)['name' => $ustadz->name, 'total_ayat' => $total];
+            return (object) ['name' => $ustadz->name, 'total_ayat' => $total];
         })->sortByDesc('total_ayat')->take(5)->values();
 
-        // Perbandingan bulan ini vs bulan lalu
+        // Perbandingan total ayat bulan ini vs bulan lalu
         $currentMonthStart = Carbon::now()->startOfMonth();
         $lastMonthStart = Carbon::now()->subMonth()->startOfMonth();
         $lastMonthEnd = Carbon::now()->subMonth()->endOfMonth();
         $totalAyatBulanIni = SetoranHafalan::whereBetween('tgl_setor', [$currentMonthStart, Carbon::now()])->sum('jumlah_ayat');
         $totalAyatBulanLalu = SetoranHafalan::whereBetween('tgl_setor', [$lastMonthStart, $lastMonthEnd])->sum('jumlah_ayat');
 
-        // Tren setoran harian (30 hari)
+        // Data tren setoran harian (30 hari)
         $endDate = Carbon::now();
         $startDate = $endDate->copy()->subDays(29);
         $dailySetoran = SetoranHafalan::whereBetween('tgl_setor', [$startDate, $endDate])
@@ -77,10 +77,10 @@ class AdminDashboardController
             $dailyData[] = $dailySetoran->has($date->format('Y-m-d')) ? $dailySetoran[$date->format('Y-m-d')]->total : 0;
         }
 
-        // Log terbaru
+        // Log aktivitas terbaru (10 terakhir)
         $recentLogs = ActivityLog::with('user')->orderBy('created_at', 'desc')->limit(10)->get();
 
-        $title = "Dashboard Admin";
+        $title = "Dashboard Admin - ARAH";
         $activeMenu = "dashboard";
         ob_start();
         include __DIR__ . '/../../views/admin/dashboard.php';
@@ -98,15 +98,19 @@ class AdminDashboardController
         $backupFile = __DIR__ . '/../../backups/backup_' . date('Ymd_His') . '.sql';
 
         $backupDir = dirname($backupFile);
-        if (!is_dir($backupDir)) mkdir($backupDir, 0755, true);
+        if (!is_dir($backupDir)) {
+            mkdir($backupDir, 0755, true);
+        }
 
+        // Gunakan mysqldump dengan path absolut jika perlu
         $command = "mysqldump --host={$host} --user={$username} --password={$password} {$database} > {$backupFile}";
-        system($command, $output);
+        exec($command, $output, $returnVar);
 
-        if (file_exists($backupFile) && filesize($backupFile) > 0) {
+        if ($returnVar === 0 && file_exists($backupFile) && filesize($backupFile) > 0) {
             logActivity('Backup database', 'Backup database berhasil');
             $_SESSION['success'] = "Backup berhasil disimpan di folder backups.";
         } else {
+            logActivity('Backup database gagal', 'Terjadi kesalahan saat backup');
             $_SESSION['error'] = "Backup gagal. Pastikan mysqldump tersedia atau folder backups writable.";
         }
         header("Location: index.php?action=admin/dashboard");
@@ -115,8 +119,8 @@ class AdminDashboardController
 
     public function logs()
     {
-        $logs = ActivityLog::with('user')->orderBy('created_at', 'desc')->limit(100)->get();
-        $title = "Log Aktivitas";
+        $logs = ActivityLog::with('user')->orderBy('created_at', 'desc')->paginate(20);
+        $title = "Log Aktivitas - ARAH";
         $activeMenu = "logs";
         ob_start();
         include __DIR__ . '/../../views/admin/logs.php';
