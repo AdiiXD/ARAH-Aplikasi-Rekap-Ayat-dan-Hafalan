@@ -1,4 +1,4 @@
-# Hafalan Tracker
+# ARAH (Aplikasi Rekap Ayat dan Hafalan)
 
 Aplikasi manajemen hafalan Al-Qur'an untuk pesantren/madrasah dengan tiga role: **Admin**, **Ustadz**, dan **Orang Tua**.  
 Dilengkapi dengan Al-Qur'an digital (baca, dengar, tafsir, tajwid warna), laporan PDF/Excel, notifikasi, statistik hafalan, dan kutipan ayat harian.
